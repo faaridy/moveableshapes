@@ -1,4 +1,5 @@
 using System.Drawing;
+using System.Runtime.CompilerServices;
 using System.Security.Cryptography.X509Certificates;
 using System.Security.Policy;
 
@@ -15,11 +16,11 @@ namespace moveableshapes
         SolidBrush eb;
         public int w = 10;
         public int l = 10;
-        bool exists = false;
         Circle c = new Circle();
         Rectangle r = new Rectangle();
         Square s = new Square();
         Shape ss = new Shape();
+        bool c_exists = false, s_exists = false;
         public Form1()
         {
             InitializeComponent();
@@ -48,7 +49,10 @@ namespace moveableshapes
             
             area.Clear(this.BackColor);
             pen.Color = c.GetColor();
-
+            btn_circle.Enabled = false;
+            btn_ractangle.Enabled = false;
+            btn_Square.Enabled = false;
+            checkBox1.Enabled = false;
             int x = c.GetRadius();
             if (ss.GetFilled() == true)
             {
@@ -57,7 +61,7 @@ namespace moveableshapes
             else {
                 area.DrawEllipse(pen, w, l, x, x);
             }
-            exists = true;
+            c_exists = true;
         }
 
         private void btn_ractangle_Click(object sender, EventArgs e)
@@ -84,8 +88,11 @@ namespace moveableshapes
             int side = s.GetSide();
 
             pen.Color = s.GetColor();
-
-            if (ss.GetFilled() == true)
+            btn_circle.Enabled = false;
+            btn_ractangle.Enabled = false;
+            btn_Square.Enabled = false;
+            checkBox1.Enabled = false;
+            if (ss.GetFilled())
             {
                 area.FillRectangle(sb, w, l, side, side);
             }
@@ -94,15 +101,16 @@ namespace moveableshapes
                 area.DrawRectangle(pen, w, l, side, side);
             }
             
-            exists = true;
+            s_exists = true;
            
         }
         private void Form1_KeyDown(object sender, KeyEventArgs e)
         {
-            if (exists)
+            if (s_exists)
             {
                 int side = s.GetSide();
-                area.FillRectangle(eb, w, l, side, side);
+                area.FillRectangle(eb, w, l, side+1, side+1);
+
                 switch (e.KeyCode)
                 {
                     case Keys.Left:
@@ -118,7 +126,43 @@ namespace moveableshapes
                         l += 5;
                         break;
                 }
-                area.FillRectangle(sb, w, l, side, side);
+                if (ss.GetFilled())
+                {
+                    area.FillRectangle(sb, w, l, side, side);
+                }
+                else
+                {
+                    area.DrawRectangle(pen, w, l, side, side);
+                }
+            }
+            else
+            {
+                int radius = c.GetRadius();
+                area.FillRectangle(eb, w, l, radius + 1, radius + 1);
+
+                switch (e.KeyCode)
+                {
+                    case Keys.Left:
+                        w -= 5;
+                        break;
+                    case Keys.Right:
+                        w += 5; ;
+                        break;
+                    case Keys.Up:
+                        l -= 5; ;
+                        break;
+                    case Keys.Down:
+                        l += 5;
+                        break;
+                }
+                if (ss.GetFilled())
+                {
+                    area.FillEllipse(sb, w, l, radius, radius);
+                }
+                else
+                {
+                    area.DrawEllipse(pen, w, l, radius, radius);
+                }
             }
         }
         private void Form1_Load(object sender, KeyEventArgs e)
